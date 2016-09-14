@@ -3,7 +3,7 @@ package br.com.pagarme.api.answer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Error implements Answer{
+public class ErrorsAnswer implements Answer{
 
 	private String type;
     private String parameter_name;
@@ -26,6 +26,4 @@ public class Error implements Answer{
 	public void setMessage(String message) {
 		this.message = message;
 	}
-    
-    
 }

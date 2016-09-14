@@ -3,7 +3,7 @@ package br.com.pagarme.api.answer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Transaction implements Answer{
+public class TransactionAnswer implements Answer{
 
 	private String object;
 	private String status;
@@ -32,7 +32,7 @@ public class Transaction implements Answer{
 	private String phone;
 	private String address;
 	private String customer;
-	private Card card;
+	private CardAnswer card;
 	
 	public String getObject() {
 		return object;
@@ -196,10 +196,10 @@ public class Transaction implements Answer{
 	public void setCustomer(String customer) {
 		this.customer = customer;
 	}
-	public Card getCard() {
+	public CardAnswer getCard() {
 		return card;
 	}
-	public void setCard(Card card) {
+	public void setCard(CardAnswer card) {
 		this.card = card;
 	}
 	
