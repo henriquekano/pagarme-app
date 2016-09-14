@@ -58,6 +58,12 @@
 							</ul>
 						</a>
 					</li>
+					<li class="pull-right">
+						<a href="/login?logout">
+							Logout
+						</a>
+						
+					</li>
 				</ul>
 			</div>
 		</div>

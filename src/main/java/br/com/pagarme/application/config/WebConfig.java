@@ -1,49 +1,32 @@
 package br.com.pagarme.application.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
-@EnableWebSecurity
-public class WebConfig {
+public class WebConfig extends WebMvcConfigurerAdapter {
 
-	public static class WebResourcesConfig extends WebMvcConfigurerAdapter {
-		@Override
-		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-		}
+	// Cade os resources
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+	}
+
+	// Pagina de login custom
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addViewController("/login").setViewName("login");
 	}
 	
-	public static class WebSecurityConfig extends WebSecurityConfigurerAdapter{
-		@Override
-	    protected void configure(HttpSecurity http) throws Exception {
-	        http
-	            .authorizeRequests()
-	                .antMatchers("/").permitAll()
-	                .antMatchers("/login/**").permitAll()
-	                .anyRequest().authenticated()
-	                .and()
-	            .formLogin()
-	                .loginPage("/login")
-	                .permitAll()
-	                .and()
-	            .logout()
-	                .permitAll();
-	    }
-
+	@Bean
+	public InternalResourceViewResolver viewResolver() {
+		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		resolver.setPrefix("/WEB-INF/jsp/");
+		resolver.setSuffix(".jsp");
+		return resolver;
 	}
-	
-	@Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER");
-    }
-	
 }

@@ -1,6 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html>
     <head>
         <title>Spring Security Example </title>
     </head>
@@ -16,6 +15,6 @@
             <div><label> Password: <input type="password" name="password"/> </label></div>
             <div><input type="submit" value="Sign In"/></div>
         </form>
-        <a href="/login/registration">Nova conta</a>
+        <a href="/login?signup">Nova conta</a>
     </body>
 </html>

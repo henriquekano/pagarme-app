@@ -6,13 +6,13 @@
 <title>Spring Security Example</title>
 </head>
 <body>
-	<form action="/login" method="POST">
+	<form action="/register" method="POST">
 		<div>
-			<label> User Name : <input type="text" name="username" />
+			<label> User Name : <input type="text" name="user.username" />
 			</label>
 		</div>
 		<div>
-			<label> Password: <input type="password" name="password" />
+			<label> Password: <input type="password" name="user.password" />
 			</label>
 		</div>
 		<div>
