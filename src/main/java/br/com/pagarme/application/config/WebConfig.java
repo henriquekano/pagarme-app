@@ -12,7 +12,6 @@ public class WebConfig {
 		public void addResourceHandlers(ResourceHandlerRegistry registry) {
 			registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 		}
-		
-		
 	}
+	
 }

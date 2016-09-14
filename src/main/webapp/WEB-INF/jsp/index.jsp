@@ -42,6 +42,30 @@
 				</button>
 				<a class="navbar-brand" href="#">Start Bootstrap</a>
 			</div>
+
+			<div class="collapse navbar-collapse"
+				id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li>
+						<a class="dropdown">
+							<button class="btn btn-default dropdown-toggle" type="button"
+								id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+								aria-expanded="true">
+								Dropdown <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+							</ul>
+						</a>
+					</li>
+					<li><a href="#">Services</a></li>
+					<li><a href="#">Contact</a></li>
+				</ul>
+			</div>
 		</div>
 		<!-- /.container -->
 	</nav>
@@ -70,13 +94,12 @@
 									<h4>
 										<a href="#">First Product</a>
 									</h4>
-									<p>
-										Descrição!
-									</p>
+									<p>Descrição!</p>
 								</div>
 
 							</div>
-							<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#payment-modal">Comprar</button>
+							<button type="button" class="btn btn-primary btn-lg"
+								data-toggle="modal" data-target="#payment-modal">Comprar</button>
 						</div>
 					</c:forEach>
 				</div>
@@ -102,7 +125,7 @@
 	<!-- /.container -->
 
 	<!-- payment modal -->
-	
+
 	<div class="modal fade" tabindex="-1" role="dialog" id="payment-modal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -115,19 +138,14 @@
 						<h4 class="modal-title">Coloque suas informações</h4>
 					</div>
 					<div class="modal-body">
-						
-					    Número do cartão: <input type="text" id="card_number"/>
-					    <br/>
-					    Nome (como escrito no cartão): <input type="text" id="card_holder_name"/>
-					    <br/>
-					    Mês de expiração: <input type="text" id="card_expiration_month"/>
-					    <br/>
-					    Ano de expiração: <input type="text" id="card_expiration_year"/>
-					    <br/>
-					    Código de segurança: <input type="text" id="card_cvv"/>
-					    <br/>
-					    <div id="field_errors">
-					    </div>
+
+						Número do cartão: <input type="text" id="card_number" /> <br />
+						Nome (como escrito no cartão): <input type="text"
+							id="card_holder_name" /> <br /> Mês de expiração: <input
+							type="text" id="card_expiration_month" /> <br /> Ano de
+						expiração: <input type="text" id="card_expiration_year" /> <br />
+						Código de segurança: <input type="text" id="card_cvv" /> <br />
+						<div id="field_errors"></div>
 					</div>
 					<div class="modal-footer">
 						<input type="submit" class="btn btn-default"></input>
@@ -142,49 +160,72 @@
 
 	<!-- jQuery -->
 	<script src="/resources/js/jquery.js"></script>
-	
+
 	<!-- Pagarme JS -->
 	<script src="https://assets.pagar.me/js/pagarme.min.js"></script>
 	<script>
-	$(document).ready(function() { // quando o jQuery estiver carregado...
-	    PagarMe.encryption_key = "ek_test_uwG3LGV3fsKOSn4jAzbqEFslNB13Eo";
+		$(document)
+				.ready(
+						function() { // quando o jQuery estiver carregado...
+							PagarMe.encryption_key = "ek_test_uwG3LGV3fsKOSn4jAzbqEFslNB13Eo";
 
-	    var form = $("#payment_form");
+							var form = $("#payment_form");
 
-	    form.submit(function(event) { // quando o form for enviado...
-	        // inicializa um objeto de cartão de crédito e completa
-	        // com os dados do form
-	        var creditCard = new PagarMe.creditCard();
-	        creditCard.cardHolderName = $("#payment_form #card_holder_name").val();
-	        creditCard.cardExpirationMonth = $("#payment_form #card_expiration_month").val();
-	        creditCard.cardExpirationYear = $("#payment_form #card_expiration_year").val();
-	        creditCard.cardNumber = $("#payment_form #card_number").val();
-	        creditCard.cardCVV = $("#payment_form #card_cvv").val();
+							form
+									.submit(function(event) { // quando o form for enviado...
+										// inicializa um objeto de cartão de crédito e completa
+										// com os dados do form
+										var creditCard = new PagarMe.creditCard();
+										creditCard.cardHolderName = $(
+												"#payment_form #card_holder_name")
+												.val();
+										creditCard.cardExpirationMonth = $(
+												"#payment_form #card_expiration_month")
+												.val();
+										creditCard.cardExpirationYear = $(
+												"#payment_form #card_expiration_year")
+												.val();
+										creditCard.cardNumber = $(
+												"#payment_form #card_number")
+												.val();
+										creditCard.cardCVV = $(
+												"#payment_form #card_cvv")
+												.val();
 
-	        // pega os erros de validação nos campos do form
-	        var fieldErrors = creditCard.fieldErrors();
+										// pega os erros de validação nos campos do form
+										var fieldErrors = creditCard
+												.fieldErrors();
 
-	        //Verifica se há erros
-	        var hasErrors = false;
-	        for(var field in fieldErrors) { hasErrors = true; break; }
+										//Verifica se há erros
+										var hasErrors = false;
+										for ( var field in fieldErrors) {
+											hasErrors = true;
+											break;
+										}
 
-	        if(hasErrors) {
-	            // realiza o tratamento de errors
-	            alert(fieldErrors);
-	        } else {
-	            // se não há erros, gera o card_hash...
-	            creditCard.generateHash(function(cardHash) {
-	                // ...coloca-o no form...
-	                form.append($('<input type="hidden" name="card_hash">').val(cardHash));
-	                // e envia o form
-	                console.log(form);
-	                form.get(0).submit();
-	            });
-	        }
+										if (hasErrors) {
+											// realiza o tratamento de errors
+											alert(fieldErrors);
+										} else {
+											// se não há erros, gera o card_hash...
+											creditCard
+													.generateHash(function(
+															cardHash) {
+														// ...coloca-o no form...
+														form
+																.append($(
+																		'<input type="hidden" name="card_hash">')
+																		.val(
+																				cardHash));
+														// e envia o form
+														console.log(form);
+														form.get(0).submit();
+													});
+										}
 
-	        return false;
-	    });
-	});
+										return false;
+									});
+						});
 	</script>
 
 	<!-- Bootstrap Core JavaScript -->

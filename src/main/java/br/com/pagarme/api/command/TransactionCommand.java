@@ -76,7 +76,7 @@ public class TransactionCommand {
 		String url = MessageFormat.format(ENDPOINT + CANCEL_PATH, urlParams);
 		
 		try{
-			restTemplate.postForEntity(ENDPOINT + TRANSACTION_PATH, null, TransactionAnswer.class);
+			restTemplate.postForEntity(url, null, TransactionAnswer.class);
 		}catch(HttpStatusCodeException e){
 			String jsonError = e.getResponseBodyAsString();
 			ErrorAnswer error;
