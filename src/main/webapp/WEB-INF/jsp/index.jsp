@@ -10,7 +10,7 @@
 <meta name="description" content="">
 <meta name="author" content="">
 
-<title>Shop Homepage - Start Bootstrap Template</title>
+<title>GimmeYour$</title>
 
 <!-- Bootstrap Core CSS -->
 <link href="/resources/css/bootstrap.min.css" rel="stylesheet">
@@ -34,31 +34,29 @@
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Start Bootstrap</a>
+				<a class="navbar-brand" href="#">GimmeYour$</a>
 			</div>
 
 			<div class="collapse navbar-collapse"
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<li>
-						<div class="dropdown">
-							<div class="btn btn-default dropdown-toggle" type="button"
-								id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
-								aria-expanded="true">
-								Cancelar Transações <span class="caret"></span>
+					<li >
+						<a class="dropdown">
+							<div data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								Cancelar Transações
 							</div>
 							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
 								<c:forEach items="${transactions}" var="transaction">
 									<li>
 										<form action="/payment/refund" method="POST">
 											<input type="hidden" name="transaction_id"
-												value="${transaction.transactionId}" /> <input type="submit"
-												value="${transaction.amount}" />
+												value="${transaction.transactionId}" /> <input
+												type="submit" value="${transaction.amount}" />
 										</form>
 									</li>
 								</c:forEach>
 							</ul>
-						</div>
+						</a>
 					</li>
 				</ul>
 			</div>
@@ -69,21 +67,19 @@
 	<!-- Page Content -->
 	<div class="container">
 		<c:if test="${success}">
-			<div class="alert alert-success" role="alert"> 
-				${message}
-			</div>
+			<div class="alert alert-success" role="alert">${message}</div>
 		</c:if>
 		<c:if test="${not empty erros}">
 			<div class="alert alert-danger" role="alert">
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
-				</span> 
-				
+				<span class="glyphicon glyphicon-exclamation-sign"
+					aria-hidden="true"> </span>
+
 				<c:forEach var="erro" items="${erros.errors}">
 					<span class="sr-only">${erro.parameter_name}:</span>
 					${erro.message}
 				</c:forEach>
 			</div>
-			
+
 		</c:if>
 		<div class="row">
 
@@ -100,11 +96,11 @@
 										<a href="#">First Product</a>
 									</h4>
 									<p>Descrição!</p>
-									<button type="button" class="pull-right btn btn-primary btn-lg" data-toggle="modal" data-target="#payment-modal">
-										Comprar
-									</button>
+									<button type="button" class="pull-right btn btn-primary btn-lg"
+										data-toggle="modal" data-target="#payment-modal">
+										Comprar</button>
 								</div>
-								
+
 							</div>
 						</div>
 					</c:forEach>
@@ -135,28 +131,56 @@
 	<div class="modal fade" tabindex="-1" role="dialog" id="payment-modal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<form id="payment_form" action="/payment/doPay" method="POST">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title">Coloque suas informações</h4>
-					</div>
+				
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Coloque suas informações</h4>
+				</div>
+				<form class="form-horizontal" id="payment_form" action="/payment/doPay" method="POST">
 					<div class="modal-body">
-
-						Número do cartão: <input type="text" id="card_number" /> <br />
-						Nome (como escrito no cartão): <input type="text"
-							id="card_holder_name" /> <br /> Mês de expiração: <input
-							type="text" id="card_expiration_month" /> <br /> Ano de
-						expiração: <input type="text" id="card_expiration_year" /> <br />
-						Código de segurança: <input type="text" id="card_cvv" /> <br />
-						<div id="field_errors"></div>
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-5 control-label">Número do cartão:</label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" id="card_number" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label">Nome (como escrito no cartão):</label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" id="card_holder_name" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label"> Mês de expiração:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_expiration_month" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label">Ano de expiração:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_expiration_year" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label"> Código de segurança:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_cvv" />
+							</div>
+						</div>
+						<div class="form-group">
+						    <div class="col-sm-offset-5 col-sm-2">
+						    	<input type="submit" class="btn btn-default"></input>
+							</div>
+						</div>
+						
 					</div>
-					<div class="modal-footer">
-						<input type="submit" class="btn btn-default"></input>
-					</div>
+				
 				</form>
+				
 			</div>
 			<!-- /.modal-content -->
 		</div>
