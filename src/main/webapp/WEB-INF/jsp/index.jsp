@@ -34,12 +34,6 @@
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse"
-					data-target="#bs-example-navbar-collapse-1">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
 				<a class="navbar-brand" href="#">Start Bootstrap</a>
 			</div>
 
@@ -47,23 +41,24 @@
 				id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav">
 					<li>
-						<a class="dropdown">
-							<button class="btn btn-default dropdown-toggle" type="button"
+						<div class="dropdown">
+							<div class="btn btn-default dropdown-toggle" type="button"
 								id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
 								aria-expanded="true">
-								Dropdown <span class="caret"></span>
-							</button>
+								Cancelar Transações <span class="caret"></span>
+							</div>
 							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-								<li><a href="#">Action</a></li>
-								<li><a href="#">Another action</a></li>
-								<li><a href="#">Something else here</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#">Separated link</a></li>
+								<c:forEach items="${transactions}" var="transaction">
+									<li>
+										<form action="/payment/refund" method="POST">
+											<input type="hidden" name="transaction_id" value="${transaction.transactionId}"/>
+											<input type="submit" value="${transaction.amount}"/>
+										</form>
+									</li>
+								</c:forEach>
 							</ul>
-						</a>
+						</div>
 					</li>
-					<li><a href="#">Services</a></li>
-					<li><a href="#">Contact</a></li>
 				</ul>
 			</div>
 		</div>

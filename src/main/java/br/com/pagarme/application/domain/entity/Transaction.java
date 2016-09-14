@@ -13,6 +13,7 @@ public class Transaction {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String transactionId;
+	private Integer amount;
 	@ManyToOne
 	private Customer customer;
 	
@@ -33,6 +34,12 @@ public class Transaction {
 	}
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+	public Integer getAmount() {
+		return amount;
+	}
+	public void setAmount(Integer amount) {
+		this.amount = amount;
 	}
 	
 	

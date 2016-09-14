@@ -30,7 +30,7 @@ public class TransactionCommand {
 	private final ObjectMapper objectMapper;
 	private final String ENDPOINT;
 	private final String TRANSACTION_PATH = "/transactions";
-	private final String CANCEL_PATH = "/{id}/refund";
+	private final String CANCEL_PATH = "/{0}/refund";
 	private final String APIKEY;
 	
 	@Autowired
@@ -71,12 +71,13 @@ public class TransactionCommand {
 	}
 
 	public void cancel(String transactionRestApiId) throws CancelException{
-		Map<String, String> urlParams = new HashMap<>();
-		urlParams.put("id", transactionRestApiId);
-		String url = MessageFormat.format(ENDPOINT + CANCEL_PATH, urlParams);
+		String url = MessageFormat.format(ENDPOINT + TRANSACTION_PATH + CANCEL_PATH, transactionRestApiId);
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
 		
 		try{
-			restTemplate.postForEntity(url, null, TransactionAnswer.class);
+			restTemplate.postForEntity(url, params, TransactionAnswer.class);
 		}catch(HttpStatusCodeException e){
 			String jsonError = e.getResponseBodyAsString();
 			ErrorAnswer error;

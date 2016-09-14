@@ -35,6 +35,7 @@ public class PaymentController {
 			TransactionAnswer ans = payService.oneTimePayment(1000, cardHash, 1, "");
 			Transaction transaction = new Transaction();
 			transaction.setTransactionId(ans.getTid());
+			transaction.setAmount(1000);
 			transDAO.save(transaction);
 			
 			redirectAttrs.addAttribute("message", "Pagamento efetivado!");

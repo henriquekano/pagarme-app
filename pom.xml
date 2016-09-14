@@ -21,12 +21,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<!-- pagarme-java -->
-		<dependency>
-			<groupId>me.pagar</groupId>
-			<artifactId>pagarme-java</artifactId>
-			<version>1.2</version>
-		</dependency>
 		<!-- JSP stuff -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -47,6 +41,12 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+		</dependency>
+		<!-- Tests -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
