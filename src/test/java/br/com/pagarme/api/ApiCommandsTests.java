@@ -20,8 +20,10 @@ import org.springframework.test.web.client.response.MockRestResponseCreators;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.pagarme.api.command.CardCommand;
 import br.com.pagarme.api.command.TransactionCommand;
 import br.com.pagarme.api.exception.CancelException;
+import br.com.pagarme.api.exception.CardRegistrationException;
 import br.com.pagarme.api.exception.PaymentException;
 import br.com.pagarme.application.ApplicationApplication;
 
@@ -37,10 +39,12 @@ public class ApiCommandsTests {
 	
 	private static  MockRestServiceServer mockServer;
 	private static TransactionCommand transCommands;
+	private static CardCommand cardCommands;
 	
 	@BeforeClass
 	public static void setup(){
 		transCommands = new TransactionCommand(testRestTemplate.getRestTemplate(), ENDPOINT, APIKEY, objectMapper);
+		cardCommands = new CardCommand(testRestTemplate.getRestTemplate(), ENDPOINT, APIKEY, objectMapper);
 	}
 	
 	@Before
@@ -72,6 +76,19 @@ public class ApiCommandsTests {
 			.andExpect(content().string("api_key=1234"))//Tem que mandar em url encoded
 			.andRespond(MockRestResponseCreators.withSuccess("{}", MediaType.APPLICATION_JSON));//responda algo
 		transCommands.cancel(transactionId);
+		mockServer.verify();
+	}
+	
+	@Test
+	public void testCardRegistrationCallRequest() throws CancelException, CardRegistrationException{
+		String cardHash = "HASH";
+		
+		mockServer
+			.expect(requestTo(ENDPOINT + "/cards"))//tem que ir pro /cards
+			.andExpect(method(HttpMethod.POST))//tem que ser POST
+			.andExpect(content().string("api_key=" + APIKEY + "&card_hash=" + cardHash))//Tem que mandar em url encoded
+			.andRespond(MockRestResponseCreators.withSuccess("{}", MediaType.APPLICATION_JSON));//responda algo
+		cardCommands.register(cardHash);
 		mockServer.verify();
 	}
 }

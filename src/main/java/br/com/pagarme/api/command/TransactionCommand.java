@@ -2,8 +2,6 @@ package br.com.pagarme.api.command;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,24 +22,17 @@ import br.com.pagarme.api.exception.PaymentException;
 
 
 @Component
-public class TransactionCommand {
+public class TransactionCommand extends Command{
 
-	private final RestTemplate restTemplate;
-	private final ObjectMapper objectMapper;
-	private final String ENDPOINT;
 	private final String TRANSACTION_PATH = "/transactions";
 	private final String CANCEL_PATH = "/{0}/refund";
-	private final String APIKEY;
 	
 	@Autowired
 	public TransactionCommand(RestTemplate restTemplate, 
 			@Value("${pagarme.endpoint:}") String endpoint, 
 			@Value("${pagarme.apikey:}") String apikey,
 			ObjectMapper objectMapper) {
-		this.restTemplate = restTemplate;
-		this.ENDPOINT = endpoint;
-		this.APIKEY = apikey;
-		this.objectMapper = objectMapper;
+		super(restTemplate, endpoint, apikey, objectMapper);
 	}
 	
 	public TransactionAnswer oneTimeTransaction(String cardHash, Integer amountInCents) throws PaymentException{
@@ -50,13 +41,13 @@ public class TransactionCommand {
 		params.add("amount", amountInCents.toString());
 		params.add("card_hash", cardHash);
 		try{
-			TransactionAnswer ans = restTemplate.postForEntity(ENDPOINT + TRANSACTION_PATH, params, TransactionAnswer.class).getBody();
+			TransactionAnswer ans = getRestTemplate().postForEntity(ENDPOINT + TRANSACTION_PATH, params, TransactionAnswer.class).getBody();
 			return ans;
 		}catch(HttpStatusCodeException e){
 			String jsonError = e.getResponseBodyAsString();
 			ErrorAnswer error;
 			try {
-				error = objectMapper.readValue(jsonError, ErrorAnswer.class);
+				error = getObjectMapper().readValue(jsonError, ErrorAnswer.class);
 				throw new PaymentException(error);
 			} catch (JsonParseException e1) {
 				e1.printStackTrace();
@@ -77,12 +68,12 @@ public class TransactionCommand {
 		params.add("api_key", APIKEY);
 		
 		try{
-			restTemplate.postForEntity(url, params, TransactionAnswer.class);
+			getRestTemplate().postForEntity(url, params, TransactionAnswer.class);
 		}catch(HttpStatusCodeException e){
 			String jsonError = e.getResponseBodyAsString();
 			ErrorAnswer error;
 			try {
-				error = objectMapper.readValue(jsonError, ErrorAnswer.class);
+				error = getObjectMapper().readValue(jsonError, ErrorAnswer.class);
 				throw new CancelException(error);
 			} catch (JsonParseException e1) {
 				e1.printStackTrace();

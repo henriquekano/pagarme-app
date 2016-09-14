@@ -1,5 +1,6 @@
 package br.com.pagarme.application.domain.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,6 +9,7 @@ import javax.persistence.Id;
 @Entity
 public class User {
 	private Long id;
+	@Column(unique=true)
     private String username;
     private String password;
 
@@ -20,7 +22,6 @@ public class User {
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getUsername() {
         return username;
     }

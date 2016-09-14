@@ -2,6 +2,7 @@ package br.com.pagarme.application.domain.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +28,7 @@ public class Customer {
 	private String complementary;
 	private String phoneNumber;
 	private String phoneDdd;
-	@OneToOne
+	@OneToOne(cascade=CascadeType.ALL)
 	private User user;
 	
 	public User getUser() {
