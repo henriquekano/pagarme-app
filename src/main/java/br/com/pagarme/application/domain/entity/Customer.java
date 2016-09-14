@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Customer {
@@ -14,21 +15,92 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private String nome;
 	@OneToMany
 	private List<Transaction> transactions;
+	private String name;
+	private String document_number;
+	private String email;
+	private String street;
+	private String neighborhood;
+	private String zipcode;
+	private String street_number;
+	private String complementary;
+	private String phoneNumber;
+	private String phoneDdd;
+	@OneToOne
+	private User user;
 	
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDocument_number() {
+		return document_number;
+	}
+	public void setDocument_number(String document_number) {
+		this.document_number = document_number;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public void setStreet(String street) {
+		this.street = street;
+	}
+	public String getNeighborhood() {
+		return neighborhood;
+	}
+	public void setNeighborhood(String neighborhood) {
+		this.neighborhood = neighborhood;
+	}
+	public String getZipcode() {
+		return zipcode;
+	}
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+	public String getStreet_number() {
+		return street_number;
+	}
+	public void setStreet_number(String street_number) {
+		this.street_number = street_number;
+	}
+	public String getComplementary() {
+		return complementary;
+	}
+	public void setComplementary(String complementary) {
+		this.complementary = complementary;
+	}
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+	public String getPhoneDdd() {
+		return phoneDdd;
+	}
+	public void setPhoneDdd(String phoneDdd) {
+		this.phoneDdd = phoneDdd;
+	}
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	public String getNome() {
-		return nome;
-	}
-	public void setNome(String nome) {
-		this.nome = nome;
 	}
 	public List<Transaction> getTransactions() {
 		return transactions;
