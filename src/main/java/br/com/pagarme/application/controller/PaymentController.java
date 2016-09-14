@@ -38,10 +38,11 @@ public class PaymentController {
 			transaction.setAmount(1000);
 			transDAO.save(transaction);
 			
-			redirectAttrs.addAttribute("message", "Pagamento efetivado!");
+			redirectAttrs.addFlashAttribute("message", "Pagamento efetivado!");
+			redirectAttrs.addFlashAttribute("success", true);
 			return "redirect:/";
 		} catch (PaymentException e) {
-			redirectAttrs.addAttribute("erros", e.getError());
+			redirectAttrs.addFlashAttribute("erros", e.getError());
 			return "redirect:/";
 		}
 		
@@ -54,9 +55,11 @@ public class PaymentController {
 		
 		try{
 			payService.cancel(transactionAPIId);
-			redirectAttrs.addAttribute("message", "Cancelamento efetivado!");
+			transDAO.deleteByTransactionId(transactionAPIId);
+			redirectAttrs.addFlashAttribute("message", "Cancelamento efetivado!");
+			redirectAttrs.addFlashAttribute("success", true);
 		}catch(CancelException e){
-			redirectAttrs.addAttribute("erros", e.getError());
+			redirectAttrs.addFlashAttribute("erros", e.getError());
 		}
 		return "redirect:/";
 	}

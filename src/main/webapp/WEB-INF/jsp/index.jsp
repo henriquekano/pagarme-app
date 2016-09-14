@@ -51,8 +51,9 @@
 								<c:forEach items="${transactions}" var="transaction">
 									<li>
 										<form action="/payment/refund" method="POST">
-											<input type="hidden" name="transaction_id" value="${transaction.transactionId}"/>
-											<input type="submit" value="${transaction.amount}"/>
+											<input type="hidden" name="transaction_id"
+												value="${transaction.transactionId}" /> <input type="submit"
+												value="${transaction.amount}" />
 										</form>
 									</li>
 								</c:forEach>
@@ -68,12 +69,21 @@
 	<!-- Page Content -->
 	<div class="container">
 		<c:if test="${success}">
-			Sucesso!
+			<div class="alert alert-success" role="alert"> 
+				${message}
+			</div>
 		</c:if>
 		<c:if test="${not empty erros}">
-			<c:forEach var="erro" items="${erros.errosAnswer}">
-				${erro.message}
-			</c:forEach>
+			<div class="alert alert-danger" role="alert">
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">
+				</span> 
+				
+				<c:forEach var="erro" items="${erros.errors}">
+					<span class="sr-only">${erro.parameter_name}:</span>
+					${erro.message}
+				</c:forEach>
+			</div>
+			
 		</c:if>
 		<div class="row">
 
@@ -90,11 +100,12 @@
 										<a href="#">First Product</a>
 									</h4>
 									<p>Descrição!</p>
+									<button type="button" class="pull-right btn btn-primary btn-lg" data-toggle="modal" data-target="#payment-modal">
+										Comprar
+									</button>
 								</div>
-
+								
 							</div>
-							<button type="button" class="btn btn-primary btn-lg"
-								data-toggle="modal" data-target="#payment-modal">Comprar</button>
 						</div>
 					</c:forEach>
 				</div>
