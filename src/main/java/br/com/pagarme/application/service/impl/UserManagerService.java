@@ -1,6 +1,7 @@
 package br.com.pagarme.application.service.impl;
 
 import java.security.Principal;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,11 +29,13 @@ public class UserManagerService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userDAO.findByUsername(username);
-		UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, user.getPassword(), null);
+		if(user == null){
+			throw new UsernameNotFoundException("Credenciais incorretas");
+		}
+		UserDetails userDetails = new org.springframework.security.core.userdetails.User(username, user.getPassword(), Arrays.asList());
 		return userDetails;
 	}
 	
-	@Autowired
 	public Customer findCurrentCustomer(Principal principal){
 		User user = userDAO.findByUsername(principal.getName());
 		Customer customer = customerDAO.findByUser(user);

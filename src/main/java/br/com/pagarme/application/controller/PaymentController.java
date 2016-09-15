@@ -11,13 +11,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.exception.CancelException;
-import br.com.pagarme.api.exception.PaymentException;
-import br.com.pagarme.application.domain.dao.CustomerDAO;
+import br.com.pagarme.api.exception.PagarmeAPIException;
 import br.com.pagarme.application.domain.dao.TransactionDAO;
-import br.com.pagarme.application.domain.dao.UserDAO;
 import br.com.pagarme.application.domain.entity.Customer;
 import br.com.pagarme.application.domain.entity.Transaction;
-import br.com.pagarme.application.domain.entity.User;
 import br.com.pagarme.application.service.PaymentService;
 import br.com.pagarme.application.service.impl.UserManagerService;
 
@@ -27,21 +24,15 @@ public class PaymentController {
 
 	private final PaymentService payService;
 	private final TransactionDAO transDAO;
-	private final CustomerDAO customerDAO;
-	private final UserDAO userDAO;
 	private final UserManagerService userService;
 	
 	@Autowired
 	public PaymentController(
 			PaymentService payService, 
 			TransactionDAO transDAO, 
-			CustomerDAO customerDAO,
-			UserDAO userDAO,
 			UserManagerService userService) {
 		this.payService = payService;
 		this.transDAO = transDAO;
-		this.customerDAO = customerDAO;
-		this.userDAO = userDAO;
 		this.userService = userService;
 	}
 	
@@ -55,21 +46,39 @@ public class PaymentController {
 			Transaction transaction = new Transaction();
 			transaction.setTransactionId(ans.getTid());
 			transaction.setAmount(1000);
-			
 			Customer customer = userService.findCurrentCustomer(principal);
-			
 			transaction.setCustomer(customer);
-			
 			transDAO.save(transaction);
 			
 			redirectAttrs.addFlashAttribute("message", "Pagamento efetivado!");
 			redirectAttrs.addFlashAttribute("success", true);
 			return "redirect:/";
-		} catch (PaymentException e) {
+		} catch (PagarmeAPIException e) {
 			redirectAttrs.addFlashAttribute("erros", e.getError());
 			return "redirect:/";
 		}
-		
+	}
+	
+	@RequestMapping(path="/doPayAutomatic", method=RequestMethod.POST)
+	public String pay(
+			RedirectAttributes redirectAttrs,
+			Principal principal){
+		try {
+			TransactionAnswer ans = payService.pay(1000, 1, "", principal);
+			Transaction transaction = new Transaction();
+			transaction.setTransactionId(ans.getTid());
+			transaction.setAmount(1000);
+			Customer customer = userService.findCurrentCustomer(principal);
+			transaction.setCustomer(customer);
+			transDAO.save(transaction);
+			
+			redirectAttrs.addFlashAttribute("message", "Pagamento efetivado!");
+			redirectAttrs.addFlashAttribute("success", true);
+			return "redirect:/";
+		} catch (PagarmeAPIException e) {
+			redirectAttrs.addFlashAttribute("erros", e.getError());
+			return "redirect:/";
+		}
 	}
 	
 	@RequestMapping(path="/refund", method=RequestMethod.POST)
@@ -79,7 +88,9 @@ public class PaymentController {
 		
 		try{
 			payService.cancel(transactionAPIId);
-			transDAO.deleteByTransactionId(transactionAPIId);
+			Transaction transactionCancelled = transDAO.findOneByTransactionId(transactionAPIId);
+			transactionCancelled.setCancelled(true);
+			transDAO.save(transactionCancelled);
 			redirectAttrs.addFlashAttribute("message", "Cancelamento efetivado!");
 			redirectAttrs.addFlashAttribute("success", true);
 		}catch(CancelException e){

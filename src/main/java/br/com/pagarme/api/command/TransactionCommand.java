@@ -15,9 +15,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.pagarme.api.answer.CardAnswer;
 import br.com.pagarme.api.answer.ErrorAnswer;
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.exception.CancelException;
+import br.com.pagarme.api.exception.PagarmeAPIException;
 import br.com.pagarme.api.exception.PaymentException;
 
 
@@ -82,6 +84,58 @@ public class TransactionCommand extends Command{
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+		}
+	}
+
+	public CardAnswer retrieveCardByTransaction(String transactionAPIId) throws PagarmeAPIException{
+		String url = ENDPOINT + TRANSACTION_PATH + "/" + transactionAPIId;
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
+		
+		try{
+			return getRestTemplate().postForEntity(url, params, CardAnswer.class).getBody();
+		}catch(HttpStatusCodeException e){
+			String jsonError = e.getResponseBodyAsString();
+			ErrorAnswer error;
+			try {
+				error = getObjectMapper().readValue(jsonError, ErrorAnswer.class);
+				throw new PagarmeAPIException(error);
+			} catch (JsonParseException e1) {
+				e1.printStackTrace();
+			} catch (JsonMappingException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public TransactionAnswer pay(String cardId, Integer amountInCents) throws PaymentException{
+		String url = ENDPOINT + TRANSACTION_PATH;
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
+		params.add("amount", amountInCents.toString());
+		params.add("card_id", cardId);
+		
+		try{
+			return getRestTemplate().postForEntity(url, params, TransactionAnswer.class).getBody();
+		}catch(HttpStatusCodeException e){
+			String jsonError = e.getResponseBodyAsString();
+			ErrorAnswer error;
+			try {
+				error = getObjectMapper().readValue(jsonError, ErrorAnswer.class);
+				throw new PaymentException(error);
+			} catch (JsonParseException e1) {
+				e1.printStackTrace();
+			} catch (JsonMappingException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			return null;
 		}
 	}
 }

@@ -58,11 +58,15 @@
 							</ul>
 						</a>
 					</li>
+					<li data-toggle="modal" data-target="#card-register-modal">
+						<a>
+							Registre seu cartão
+						</a>
+					</li>
 					<li class="pull-right">
 						<a href="/login?logout">
 							Logout
 						</a>
-						
 					</li>
 				</ul>
 			</div>
@@ -102,9 +106,20 @@
 										<a href="#">First Product</a>
 									</h4>
 									<p>Descrição!</p>
+									<c:choose>
+										<c:when test="${currentUser.cardRegistered}">
+											<form action="/payment/doPayAutomatic" method="POST">
+												<button class="pull-right btn btn-primary btn-lg">
+													One-click buy
+												</button>
+											</form>
+											
+										</c:when>
+									</c:choose>
 									<button type="button" class="pull-right btn btn-primary btn-lg"
 										data-toggle="modal" data-target="#payment-modal">
-										Comprar</button>
+										Comprar
+									</button>
 								</div>
 
 							</div>
@@ -133,7 +148,6 @@
 	<!-- /.container -->
 
 	<!-- payment modal -->
-
 	<div class="modal fade" tabindex="-1" role="dialog" id="payment-modal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -193,79 +207,74 @@
 		<!-- /.modal-dialog -->
 	</div>
 	<!-- /.modal -->
-
+	
+	<div class="modal fade" tabindex="-1" role="dialog" id="card-register-modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Coloque suas informações</h4>
+				</div>
+				<form class="form-horizontal" id="payment_form" action="/registerCard" method="POST">
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="inputEmail3" class="col-sm-5 control-label">Número do cartão:</label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" id="card_number" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label">Nome (como escrito no cartão):</label>
+							<div class="col-sm-6">
+								<input class="form-control" type="text" id="card_holder_name" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label"> Mês de expiração:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_expiration_month" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label">Ano de expiração:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_expiration_year" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputPassword3" class="col-sm-5 control-label"> Código de segurança:</label>
+							<div class="col-sm-6">
+								 <input class="form-control" type="text" id="card_cvv" />
+							</div>
+						</div>
+						<div class="form-group">
+						    <div class="col-sm-offset-5 col-sm-2">
+						    	<input type="submit" class="btn btn-default"></input>
+							</div>
+						</div>
+						
+					</div>
+				
+				</form>
+				
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	
 	<!-- jQuery -->
 	<script src="/resources/js/jquery.js"></script>
-
-	<!-- Pagarme JS -->
-	<script src="https://assets.pagar.me/js/pagarme.min.js"></script>
-	<script>
-		$(document)
-				.ready(
-						function() { // quando o jQuery estiver carregado...
-							PagarMe.encryption_key = "ek_test_uwG3LGV3fsKOSn4jAzbqEFslNB13Eo";
-
-							var form = $("#payment_form");
-
-							form
-									.submit(function(event) { // quando o form for enviado...
-										// inicializa um objeto de cartão de crédito e completa
-										// com os dados do form
-										var creditCard = new PagarMe.creditCard();
-										creditCard.cardHolderName = $(
-												"#payment_form #card_holder_name")
-												.val();
-										creditCard.cardExpirationMonth = $(
-												"#payment_form #card_expiration_month")
-												.val();
-										creditCard.cardExpirationYear = $(
-												"#payment_form #card_expiration_year")
-												.val();
-										creditCard.cardNumber = $(
-												"#payment_form #card_number")
-												.val();
-										creditCard.cardCVV = $(
-												"#payment_form #card_cvv")
-												.val();
-
-										// pega os erros de validação nos campos do form
-										var fieldErrors = creditCard
-												.fieldErrors();
-
-										//Verifica se há erros
-										var hasErrors = false;
-										for ( var field in fieldErrors) {
-											hasErrors = true;
-											break;
-										}
-
-										if (hasErrors) {
-											// realiza o tratamento de errors
-											alert(fieldErrors);
-										} else {
-											// se não há erros, gera o card_hash...
-											creditCard
-													.generateHash(function(
-															cardHash) {
-														// ...coloca-o no form...
-														form
-																.append($(
-																		'<input type="hidden" name="card_hash">')
-																		.val(
-																				cardHash));
-														// e envia o form
-														console.log(form);
-														form.get(0).submit();
-													});
-										}
-
-										return false;
-									});
-						});
-	</script>
-
 	<!-- Bootstrap Core JavaScript -->
 	<script src="/resources/js/bootstrap.min.js"></script>
+	<!-- Pagarme JS -->
+	<script src="https://assets.pagar.me/js/pagarme.min.js"></script>
+	<script src="/resources/js/pagarme_hash_generator.js"></script>
 
 </body>
 

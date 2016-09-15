@@ -8,6 +8,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import br.com.pagarme.application.service.impl.UserManagerService;
+
 @Configuration
 @EnableWebSecurity
 public  class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -30,7 +32,9 @@ public  class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	// Usuario default
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
+	public void configureGlobal(AuthenticationManagerBuilder auth, UserManagerService userService) throws Exception {
+		//seta o cara que faz a transição (usuário do spring) <-> (usuário da aplicação)
+		auth.userDetailsService(userService);
+ 		auth.inMemoryAuthentication().withUser("user").password("password").roles("USER");
 	}
 }

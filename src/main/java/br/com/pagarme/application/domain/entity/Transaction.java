@@ -16,7 +16,19 @@ public class Transaction {
 	private Integer amount;
 	@ManyToOne
 	private Customer customer;
+	private Boolean cancelled;
 	
+	public Transaction() {
+		//valores default
+		this.cancelled = false;
+	}
+	
+	public Boolean getCancelled() {
+		return cancelled;
+	}
+	public void setCancelled(Boolean cancelled) {
+		this.cancelled = cancelled;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -1,5 +1,7 @@
 package br.com.pagarme.application.domain.dao;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.repository.CrudRepository;
@@ -16,5 +18,11 @@ public interface TransactionDAO extends CrudRepository<Transaction, Long>{
     Long deleteByTransactionId(String transactionId);
 	
 	@Transactional
-	Iterable<Transaction> findByCustomer(Customer customer);
+	Iterable<Transaction> findByCustomerAndCancelled(Customer customer, Boolean cancelled);
+	
+	@Transactional
+	List<Transaction> findByCustomer(Customer customer);
+	
+	@Transactional
+	Transaction findOneByTransactionId(String transactionId);
 }

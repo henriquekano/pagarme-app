@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,7 +17,7 @@ public class Customer {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	@OneToMany
+	@OneToMany(fetch=FetchType.EAGER)
 	private List<Transaction> transactions;
 	private String name;
 	private String document_number;
@@ -30,7 +31,15 @@ public class Customer {
 	private String phoneDdd;
 	@OneToOne(cascade=CascadeType.ALL)
 	private User user;
+	private Boolean cardRegistered = false;
+	private String cardId;
 	
+	public String getCardId() {
+		return cardId;
+	}
+	public void setCardId(String cardId) {
+		this.cardId = cardId;
+	}
 	public User getUser() {
 		return user;
 	}
@@ -108,6 +117,12 @@ public class Customer {
 	}
 	public void setTransactions(List<Transaction> transactions) {
 		this.transactions = transactions;
+	}
+	public Boolean getCardRegistered() {
+		return cardRegistered;
+	}
+	public void setCardRegistered(Boolean cardRegistered) {
+		this.cardRegistered = cardRegistered;
 	}
 	
 	
