@@ -55,7 +55,11 @@ public class PagarmeRestPaymentService implements PaymentService {
 		Customer currentCustomer = userService.findCurrentCustomer(principal);
 		if(currentCustomer.getCardId() != null){
 			CardAnswer card = cardCommands.retrieve(currentCustomer.getCardId());
-			return transCommands.pay(card.getId(), amount);
+			return transCommands.pay(card.getId(), amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
+					currentCustomer.getEmail(), currentCustomer.getStreet(), 
+					currentCustomer.getNeighborhood(), currentCustomer.getZipcode(), 
+					currentCustomer.getStreet_number(), currentCustomer.getComplementary(), 
+					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber());
 		}else{
 			throw new PagarmeAPIException(null);
 		}

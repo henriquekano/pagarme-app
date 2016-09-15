@@ -29,9 +29,6 @@ public class TransactionAnswer implements Answer{
 	private String referer;
 	private String ip;
 	private String subscription_id;
-	private String phone;
-	private String address;
-	private String customer;
 	private CardAnswer card;
 	
 	public String getObject() {
@@ -177,24 +174,6 @@ public class TransactionAnswer implements Answer{
 	}
 	public void setSubscription_id(String subscription_id) {
 		this.subscription_id = subscription_id;
-	}
-	public String getPhone() {
-		return phone;
-	}
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	public String getAddress() {
-		return address;
-	}
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	public String getCustomer() {
-		return customer;
-	}
-	public void setCustomer(String customer) {
-		this.customer = customer;
 	}
 	public CardAnswer getCard() {
 		return card;

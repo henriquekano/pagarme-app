@@ -112,14 +112,26 @@ public class TransactionCommand extends Command{
 		}
 	}
 
-	public TransactionAnswer pay(String cardId, Integer amountInCents) throws PaymentException{
+	public TransactionAnswer pay(String cardId, Integer amountInCents, String name, 
+			String document_number, String email, String street, String neighborhood, 
+			String zipcode, String street_number, String complementary, String ddd, 
+			String number) throws PaymentException{
 		String url = ENDPOINT + TRANSACTION_PATH;
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("api_key", APIKEY);
 		params.add("amount", amountInCents.toString());
 		params.add("card_id", cardId);
-		
+		params.add("customer[name]", name);
+		params.add("customer[document_number]", document_number);
+		params.add("customer[email]", email);
+		params.add("customer[address][street]", street);
+		params.add("customer[address][neighborhood]", neighborhood);
+		params.add("customer[address][zipcode]", zipcode);
+		params.add("customer[address][street_number]", street_number);
+		params.add("customer[address][complementary]", complementary);
+		params.add("customer[phone][ddd]", ddd);
+		params.add("customer[phone][number]", number);
 		try{
 			return getRestTemplate().postForEntity(url, params, TransactionAnswer.class).getBody();
 		}catch(HttpStatusCodeException e){
