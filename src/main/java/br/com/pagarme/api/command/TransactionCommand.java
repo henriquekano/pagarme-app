@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.pagarme.api.answer.CardAnswer;
 import br.com.pagarme.api.answer.ErrorAnswer;
+import br.com.pagarme.api.answer.Payable;
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.exception.CancelException;
 import br.com.pagarme.api.exception.PagarmeAPIException;
@@ -28,6 +30,7 @@ public class TransactionCommand extends Command{
 
 	private final String TRANSACTION_PATH = "/transactions";
 	private final String CANCEL_PATH = "/{0}/refund";
+	private final String PAYABLES_PATH = "/{0}/payables";
 	
 	@Autowired
 	public TransactionCommand(RestTemplate restTemplate, 
@@ -149,5 +152,12 @@ public class TransactionCommand extends Command{
 			}
 			return null;
 		}
+	}
+
+	public Payable[] retrievePayablesByTransaction(String transactionAPIId) throws PagarmeAPIException{
+		String url = MessageFormat.format(ENDPOINT + TRANSACTION_PATH + PAYABLES_PATH, transactionAPIId);
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("api_key", APIKEY);
+		return requestList(url, HttpMethod.GET, params, Payable.class);
 	}
 }

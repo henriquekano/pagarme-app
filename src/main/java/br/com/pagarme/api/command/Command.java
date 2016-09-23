@@ -62,4 +62,29 @@ public abstract class Command {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected <T extends Answer> T[] requestList(String url, HttpMethod method, MultiValueMap<String, String> params, Class<T> clazz) throws PagarmeAPIException{
+		try{
+			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, null);
+			return (T[]) getRestTemplate().exchange(url, method, entity, Class.forName("[L" + clazz.getName() + ";")).getBody();
+		}catch(HttpStatusCodeException e){
+			String jsonError = e.getResponseBodyAsString();
+			ErrorAnswer error;
+			try {
+				error = getObjectMapper().readValue(jsonError, ErrorAnswer.class);
+				throw new PagarmeAPIException(error);
+			} catch (JsonParseException e1) {
+				e1.printStackTrace();
+			} catch (JsonMappingException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }
