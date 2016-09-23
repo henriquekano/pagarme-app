@@ -1,11 +1,15 @@
 package br.com.pagarme.application.service.impl;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import br.com.pagarme.api.answer.CardAnswer;
+import br.com.pagarme.api.answer.SplitRule;
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.command.CardCommand;
 import br.com.pagarme.api.command.TransactionCommand;
@@ -25,19 +29,23 @@ public class PagarmeRestPaymentService implements PaymentService {
 	private final CardCommand cardCommands;
 	private final UserManagerService userService;
 	private final TransactionDAO transDAO;
+	private final String[] recipientIds;
 	
 	@Autowired
 	public PagarmeRestPaymentService(TransactionCommand transCommands, 
-			UserManagerService userService, TransactionDAO transDAO, CardCommand cardCommands) {
+			UserManagerService userService, TransactionDAO transDAO, CardCommand cardCommands,
+			@Value("${pagarme.recipientIds:}") String[] recipientIds) {
 		this.transCommands = transCommands;
 		this.userService = userService;
 		this.transDAO = transDAO;
 		this.cardCommands = cardCommands;
+		this.recipientIds = recipientIds;
 	}
 	
 	@Override
 	public TransactionAnswer oneTimePayment(Integer amount, String cardHash, Integer installments, String postbackUrl) throws PagarmeAPIException{
-		TransactionAnswer trans = this.transCommands.oneTimeTransaction(cardHash, amount);
+		SplitRule[] rules = makeSplitRules(recipientIds);
+		TransactionAnswer trans = this.transCommands.oneTimeTransaction(cardHash, amount, rules);
 		return trans;
 	}
 	
@@ -55,11 +63,12 @@ public class PagarmeRestPaymentService implements PaymentService {
 		Customer currentCustomer = userService.findCurrentCustomer(principal);
 		if(currentCustomer.getCardId() != null){
 			CardAnswer card = cardCommands.retrieve(currentCustomer.getCardId());
+			SplitRule[] rules = makeSplitRules(recipientIds);
 			return transCommands.pay(card.getId(), amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
 					currentCustomer.getEmail(), currentCustomer.getStreet(), 
 					currentCustomer.getNeighborhood(), currentCustomer.getZipcode(), 
 					currentCustomer.getStreet_number(), currentCustomer.getComplementary(), 
-					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber());
+					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber(), rules);
 		}else{
 			throw new PagarmeAPIException(null);
 		}
@@ -70,6 +79,19 @@ public class PagarmeRestPaymentService implements PaymentService {
 		return cardCommands.register(cardHash);
 	}
 	
-	
+	private SplitRule[] makeSplitRules(String[] recipientIds){
+		List<SplitRule> rules = new ArrayList<>();
+		
+		//Controi a logica do split rules
+		for (String recipientId : this.recipientIds) {
+			SplitRule rule = new SplitRule();
+			rule.setCharge_processing_fee(true);
+			rule.setLiable(true);
+			rule.setPercentage(String.valueOf(100 / this.recipientIds.length));
+			rule.setRecipient_id(recipientId);
+			rules.add(rule);
+		}
+		return rules.toArray(new SplitRule[this.recipientIds.length]);
+	}
 
 }

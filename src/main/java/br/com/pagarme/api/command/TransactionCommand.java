@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.pagarme.api.answer.CardAnswer;
 import br.com.pagarme.api.answer.ErrorAnswer;
 import br.com.pagarme.api.answer.Payable;
+import br.com.pagarme.api.answer.SplitRule;
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.exception.CancelException;
 import br.com.pagarme.api.exception.PagarmeAPIException;
@@ -64,6 +65,23 @@ public class TransactionCommand extends Command{
 			return null;
 		}
 		
+	}
+	
+	public TransactionAnswer oneTimeTransaction(String cardHash, Integer amountInCents, 
+			SplitRule[] rules) throws PagarmeAPIException{
+		String url = ENDPOINT + TRANSACTION_PATH;
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
+		params.add("amount", amountInCents.toString());
+		params.add("card_hash", cardHash);
+		for(int i = 0; i < rules.length; i++){
+			params.add("split_rules[" + i + "][recipient_id]", rules[i].getRecipient_id());
+			params.add("split_rules[" + i + "][charge_processing_fee]", rules[i].getCharge_processing_fee().toString());
+			params.add("split_rules[" + i + "][liable]", rules[i].getLiable().toString());
+			params.add("split_rules[" + i + "][percentage]", rules[i].getPercentage());
+		}
+		
+		return request(url, HttpMethod.POST, params, TransactionAnswer.class);
 	}
 
 	public void cancel(String transactionRestApiId) throws CancelException{
@@ -154,6 +172,36 @@ public class TransactionCommand extends Command{
 		}
 	}
 
+	public TransactionAnswer pay(String cardId, Integer amountInCents, String name, 
+			String document_number, String email, String street, String neighborhood, 
+			String zipcode, String street_number, String complementary, String ddd, 
+			String number, SplitRule[] rules) throws PagarmeAPIException{
+		String url = ENDPOINT + TRANSACTION_PATH;
+		
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
+		params.add("amount", amountInCents.toString());
+		params.add("card_id", cardId);
+		params.add("customer[name]", name);
+		params.add("customer[document_number]", document_number);
+		params.add("customer[email]", email);
+		params.add("customer[address][street]", street);
+		params.add("customer[address][neighborhood]", neighborhood);
+		params.add("customer[address][zipcode]", zipcode);
+		params.add("customer[address][street_number]", street_number);
+		params.add("customer[address][complementary]", complementary);
+		params.add("customer[phone][ddd]", ddd);
+		params.add("customer[phone][number]", number);
+		for(int i = 0; i < rules.length; i++){
+			params.add("split_rules[" + i + "][recipient_id]", rules[i].getRecipient_id());
+			params.add("split_rules[" + i + "][charge_processing_fee]", rules[i].getCharge_processing_fee().toString());
+			params.add("split_rules[" + i + "][liable]", rules[i].getLiable().toString());
+			params.add("split_rules[" + i + "][percentage]", rules[i].getPercentage());
+		}
+		
+		return request(url, HttpMethod.POST, params, TransactionAnswer.class);
+	}
+	
 	public Payable[] retrievePayablesByTransaction(String transactionAPIId) throws PagarmeAPIException{
 		String url = MessageFormat.format(ENDPOINT + TRANSACTION_PATH + PAYABLES_PATH, transactionAPIId);
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();

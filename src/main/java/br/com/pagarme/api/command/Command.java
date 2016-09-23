@@ -1,6 +1,7 @@
 package br.com.pagarme.api.command;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -43,6 +44,7 @@ public abstract class Command {
 	
 	protected <T extends Answer> T request(String url, HttpMethod method, MultiValueMap<String, String> params, Class<T> clazz) throws PagarmeAPIException{
 		try{
+			params.put("api_key", Arrays.asList(APIKEY));
 			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, null);
 			return getRestTemplate().exchange(url, method, entity, clazz).getBody();
 		}catch(HttpStatusCodeException e){
@@ -65,6 +67,7 @@ public abstract class Command {
 	@SuppressWarnings("unchecked")
 	protected <T extends Answer> T[] requestList(String url, HttpMethod method, MultiValueMap<String, String> params, Class<T> clazz) throws PagarmeAPIException{
 		try{
+			params.put("api_key", Arrays.asList(APIKEY));
 			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, null);
 			return (T[]) getRestTemplate().exchange(url, method, entity, Class.forName("[L" + clazz.getName() + ";")).getBody();
 		}catch(HttpStatusCodeException e){
