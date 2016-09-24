@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
@@ -44,6 +45,8 @@ public abstract class Command {
 	
 	protected <T extends Answer> T request(String url, HttpMethod method, MultiValueMap<String, String> params, Class<T> clazz) throws PagarmeAPIException{
 		try{
+			if(params == null)
+				params = new LinkedMultiValueMap<>();
 			params.put("api_key", Arrays.asList(APIKEY));
 			HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, null);
 			return getRestTemplate().exchange(url, method, entity, clazz).getBody();
