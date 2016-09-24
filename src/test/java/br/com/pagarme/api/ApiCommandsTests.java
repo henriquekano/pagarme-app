@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.pagarme.api.command.CardCommand;
 import br.com.pagarme.api.command.TransactionCommand;
+import br.com.pagarme.api.enums.PaymentMethod;
 import br.com.pagarme.api.exception.CancelException;
 import br.com.pagarme.api.exception.CardRegistrationException;
 import br.com.pagarme.api.exception.PaymentException;
@@ -62,7 +63,7 @@ public class ApiCommandsTests {
 			.andExpect(method(HttpMethod.POST))//tem que ser POST
 			.andExpect(content().string("api_key=" + APIKEY + "&amount=" + amount + "&card_hash=" + cardHash + "&payment_method=boleto"))//Tem que mandar em url encoded
 			.andRespond(MockRestResponseCreators.withSuccess("{}", MediaType.APPLICATION_JSON));//responda algo
-		transCommands.oneTimeTransaction(cardHash, 1000, "boleto");
+		transCommands.oneTimeTransaction(cardHash, 1000, PaymentMethod.boleto);
 		mockServer.verify();
 	}
 	

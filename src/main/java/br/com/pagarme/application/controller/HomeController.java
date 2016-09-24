@@ -1,6 +1,9 @@
 package br.com.pagarme.application.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.pagarme.api.answer.CardAnswer;
+import br.com.pagarme.api.answer.PayableAnswer;
 import br.com.pagarme.api.exception.PagarmeAPIException;
 import br.com.pagarme.application.domain.dao.CustomerDAO;
 import br.com.pagarme.application.domain.dao.TransactionDAO;
@@ -44,9 +48,19 @@ public class HomeController {
 		Customer customer = userService.findCurrentCustomer(principal);
 		
 		Iterable<Transaction> transactions = transDAO.findByCustomerAndCancelled(customer, false);
-		model.addAttribute("transactions", transactions);
-		model.addAttribute("currentUser", userService.findCurrentCustomer(principal));
-
+		List<PayableAnswer> payables = new ArrayList<>();
+		try{
+			for (Transaction transaction : transactions) {
+				PayableAnswer[] existingPayables = pagarmeService.getPayables(transaction);
+				payables.addAll(Arrays.asList(existingPayables));
+			}
+			
+			model.addAttribute("payables", payables);
+			model.addAttribute("transactions", transactions);
+			model.addAttribute("currentUser", userService.findCurrentCustomer(principal));
+		}catch(PagarmeAPIException e){
+			model.addAttribute("erros", e.getError());
+		}
 		return "index";
 	}
 	

@@ -58,6 +58,31 @@
 							</ul>
 						</a>
 					</li>
+					<li >
+						<a class="dropdown">
+							<div data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								Payables
+							</div>
+							<div  class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<c:forEach items="${payables}" var="payable">
+									<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="object: ${payable.object}
+id: ${payable.id}
+status: ${payable.status}
+amount: ${payable.amount}
+fee: ${payable.fee}
+installment: ${payable.installment}
+transaction_id: ${payable.transaction_id}
+split_rule_id: ${payable.split_rule_id}
+payment_date: ${payable.payment_date}
+type: ${payable.type}
+payment_method: ${payable.payment_method}
+date_created: ${payable.date_created}">Tooltip on left</button>
+									
+								</c:forEach>
+							</div>
+							
+						</a>
+					</li>
 					<li data-toggle="modal" data-target="#card-register-modal">
 						<a>
 							Registre seu cartão
@@ -116,10 +141,12 @@
 											
 										</c:when>
 									</c:choose>
-									<button type="button" class="pull-right btn btn-primary btn-lg"
-										data-toggle="modal" data-target="#payment-modal">
-										Comprar
-									</button>
+									<form action="/payment/doPay" method="POST">
+										<input type="submit" class="pull-right btn btn-primary btn-lg">
+											Comprar
+										</input>
+									</form>
+									
 								</div>
 
 							</div>

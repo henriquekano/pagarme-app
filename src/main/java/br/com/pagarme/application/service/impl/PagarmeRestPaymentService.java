@@ -9,15 +9,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import br.com.pagarme.api.answer.CardAnswer;
+import br.com.pagarme.api.answer.PayableAnswer;
 import br.com.pagarme.api.answer.SplitRule;
 import br.com.pagarme.api.answer.TransactionAnswer;
 import br.com.pagarme.api.command.CardCommand;
 import br.com.pagarme.api.command.TransactionCommand;
+import br.com.pagarme.api.enums.PaymentMethod;
 import br.com.pagarme.api.exception.CancelException;
 import br.com.pagarme.api.exception.CardRegistrationException;
 import br.com.pagarme.api.exception.PagarmeAPIException;
 import br.com.pagarme.application.domain.dao.TransactionDAO;
 import br.com.pagarme.application.domain.entity.Customer;
+import br.com.pagarme.application.domain.entity.Transaction;
 import br.com.pagarme.application.service.PaymentService;
 
 
@@ -43,10 +46,17 @@ public class PagarmeRestPaymentService implements PaymentService {
 	}
 	
 	@Override
-	public TransactionAnswer oneTimePayment(Integer amount, String cardHash, Integer installments, String postbackUrl) throws PagarmeAPIException{
+	public TransactionAnswer oneTimePayment(Integer amount, String cardHash, Integer installments, String postbackUrl, Principal principal) throws PagarmeAPIException{
 		SplitRule[] rules = makeSplitRules(recipientIds);
-		TransactionAnswer trans = this.transCommands.oneTimeTransaction(cardHash, amount, rules, "boleto");
+		TransactionAnswer trans = this.transCommands.oneTimeTransaction(null, amount, rules, PaymentMethod.boleto);
 		trans = transCommands.testBoletoPay(trans.getId());
+		
+		Transaction transaction = new Transaction();
+		transaction.setTransactionId(trans.getId());
+		transaction.setAmount(1000);
+		Customer customer = userService.findCurrentCustomer(principal);
+		transaction.setCustomer(customer);
+		transDAO.save(transaction);
 		return trans;
 	}
 	
@@ -62,19 +72,23 @@ public class PagarmeRestPaymentService implements PaymentService {
 			throws PagarmeAPIException {
 		
 		Customer currentCustomer = userService.findCurrentCustomer(principal);
-		if(currentCustomer.getCardId() != null){
-			CardAnswer card = cardCommands.retrieve(currentCustomer.getCardId());
-			SplitRule[] rules = makeSplitRules(recipientIds);
-			TransactionAnswer trans = transCommands.pay(card.getId(), amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
-					currentCustomer.getEmail(), currentCustomer.getStreet(), 
-					currentCustomer.getNeighborhood(), currentCustomer.getZipcode(), 
-					currentCustomer.getStreet_number(), currentCustomer.getComplementary(), 
-					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber(), rules, "boleto");
-			trans = transCommands.testBoletoPay(trans.getId());
-			return trans;
-		}else{
-			throw new PagarmeAPIException(null);
-		}
+//		CardAnswer card = cardCommands.retrieve(currentCustomer.getCardId());
+		SplitRule[] rules = makeSplitRules(recipientIds);
+		TransactionAnswer trans = transCommands.pay(null, amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
+				currentCustomer.getEmail(), currentCustomer.getStreet(), 
+				currentCustomer.getNeighborhood(), currentCustomer.getZipcode(), 
+				currentCustomer.getStreet_number(), currentCustomer.getComplementary(), 
+				currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber(), rules, PaymentMethod.boleto);
+		trans = transCommands.testBoletoPay(trans.getId());
+		
+		Transaction transaction = new Transaction();
+		transaction.setTransactionId(trans.getId());
+		transaction.setAmount(1000);
+		Customer customer = userService.findCurrentCustomer(principal);
+		transaction.setCustomer(customer);
+		transDAO.save(transaction);
+		return trans;
+
 	}
 
 	@Override
@@ -82,7 +96,9 @@ public class PagarmeRestPaymentService implements PaymentService {
 		return cardCommands.register(cardHash);
 	}
 	
-	
+	public PayableAnswer[] getPayables(Transaction transaction) throws PagarmeAPIException{
+		return transCommands.retrievePayablesByTransaction(transaction.getTransactionId());
+	}
 	
 	private SplitRule[] makeSplitRules(String[] recipientIds){
 		List<SplitRule> rules = new ArrayList<>();

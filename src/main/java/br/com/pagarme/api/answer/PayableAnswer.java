@@ -3,7 +3,7 @@ package br.com.pagarme.api.answer;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Payable implements Answer {
+public class PayableAnswer implements Answer {
 
 	private String object;
 	private String id;
