@@ -45,7 +45,8 @@ public class PagarmeRestPaymentService implements PaymentService {
 	@Override
 	public TransactionAnswer oneTimePayment(Integer amount, String cardHash, Integer installments, String postbackUrl) throws PagarmeAPIException{
 		SplitRule[] rules = makeSplitRules(recipientIds);
-		TransactionAnswer trans = this.transCommands.oneTimeTransaction(cardHash, amount, rules);
+		TransactionAnswer trans = this.transCommands.oneTimeTransaction(cardHash, amount, rules, "boleto");
+		trans = transCommands.testBoletoPay(trans.getId());
 		return trans;
 	}
 	
@@ -64,11 +65,13 @@ public class PagarmeRestPaymentService implements PaymentService {
 		if(currentCustomer.getCardId() != null){
 			CardAnswer card = cardCommands.retrieve(currentCustomer.getCardId());
 			SplitRule[] rules = makeSplitRules(recipientIds);
-			return transCommands.pay(card.getId(), amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
+			TransactionAnswer trans = transCommands.pay(card.getId(), amount, currentCustomer.getName(), currentCustomer.getDocument_number(), 
 					currentCustomer.getEmail(), currentCustomer.getStreet(), 
 					currentCustomer.getNeighborhood(), currentCustomer.getZipcode(), 
 					currentCustomer.getStreet_number(), currentCustomer.getComplementary(), 
-					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber(), rules);
+					currentCustomer.getPhoneDdd(), currentCustomer.getPhoneNumber(), rules, "boleto");
+			trans = transCommands.testBoletoPay(trans.getId());
+			return trans;
 		}else{
 			throw new PagarmeAPIException(null);
 		}
@@ -78,6 +81,8 @@ public class PagarmeRestPaymentService implements PaymentService {
 	public CardAnswer registerCard(String cardHash) throws CardRegistrationException {
 		return cardCommands.register(cardHash);
 	}
+	
+	
 	
 	private SplitRule[] makeSplitRules(String[] recipientIds){
 		List<SplitRule> rules = new ArrayList<>();

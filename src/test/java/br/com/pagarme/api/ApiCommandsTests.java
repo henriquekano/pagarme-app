@@ -60,9 +60,9 @@ public class ApiCommandsTests {
 		mockServer
 			.expect(requestTo("ENDPOINT/transactions"))//tem que ir pro /transactions
 			.andExpect(method(HttpMethod.POST))//tem que ser POST
-			.andExpect(content().string("api_key=" + APIKEY + "&amount=" + amount + "&card_hash=" + cardHash))//Tem que mandar em url encoded
+			.andExpect(content().string("api_key=" + APIKEY + "&amount=" + amount + "&card_hash=" + cardHash + "&payment_method=boleto"))//Tem que mandar em url encoded
 			.andRespond(MockRestResponseCreators.withSuccess("{}", MediaType.APPLICATION_JSON));//responda algo
-		transCommands.oneTimeTransaction(cardHash, 1000);
+		transCommands.oneTimeTransaction(cardHash, 1000, "boleto");
 		mockServer.verify();
 	}
 	

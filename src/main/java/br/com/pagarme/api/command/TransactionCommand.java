@@ -41,11 +41,12 @@ public class TransactionCommand extends Command{
 		super(restTemplate, endpoint, apikey, objectMapper);
 	}
 	
-	public TransactionAnswer oneTimeTransaction(String cardHash, Integer amountInCents) throws PaymentException{
+	public TransactionAnswer oneTimeTransaction(String cardHash, Integer amountInCents, String paymentMethod) throws PaymentException{
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("api_key", APIKEY);
 		params.add("amount", amountInCents.toString());
 		params.add("card_hash", cardHash);
+		params.add("payment_method", paymentMethod);
 		try{
 			TransactionAnswer ans = getRestTemplate().postForEntity(ENDPOINT + TRANSACTION_PATH, params, TransactionAnswer.class).getBody();
 			return ans;
@@ -68,12 +69,13 @@ public class TransactionCommand extends Command{
 	}
 	
 	public TransactionAnswer oneTimeTransaction(String cardHash, Integer amountInCents, 
-			SplitRule[] rules) throws PagarmeAPIException{
+			SplitRule[] rules, String paymentMethod) throws PagarmeAPIException{
 		String url = ENDPOINT + TRANSACTION_PATH;
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("api_key", APIKEY);
 		params.add("amount", amountInCents.toString());
 		params.add("card_hash", cardHash);
+		params.add("payment_method", paymentMethod);
 		for(int i = 0; i < rules.length; i++){
 			params.add("split_rules[" + i + "][recipient_id]", rules[i].getRecipient_id());
 			params.add("split_rules[" + i + "][charge_processing_fee]", rules[i].getCharge_processing_fee().toString());
@@ -136,13 +138,14 @@ public class TransactionCommand extends Command{
 	public TransactionAnswer pay(String cardId, Integer amountInCents, String name, 
 			String document_number, String email, String street, String neighborhood, 
 			String zipcode, String street_number, String complementary, String ddd, 
-			String number) throws PaymentException{
+			String number, String paymentMethod) throws PaymentException{
 		String url = ENDPOINT + TRANSACTION_PATH;
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("api_key", APIKEY);
 		params.add("amount", amountInCents.toString());
 		params.add("card_id", cardId);
+		params.add("payment_method", paymentMethod);
 		params.add("customer[name]", name);
 		params.add("customer[document_number]", document_number);
 		params.add("customer[email]", email);
@@ -175,13 +178,14 @@ public class TransactionCommand extends Command{
 	public TransactionAnswer pay(String cardId, Integer amountInCents, String name, 
 			String document_number, String email, String street, String neighborhood, 
 			String zipcode, String street_number, String complementary, String ddd, 
-			String number, SplitRule[] rules) throws PagarmeAPIException{
+			String number, SplitRule[] rules, String paymentMethod) throws PagarmeAPIException{
 		String url = ENDPOINT + TRANSACTION_PATH;
 		
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("api_key", APIKEY);
 		params.add("amount", amountInCents.toString());
 		params.add("card_id", cardId);
+		params.add("payment_method", paymentMethod);
 		params.add("customer[name]", name);
 		params.add("customer[document_number]", document_number);
 		params.add("customer[email]", email);
@@ -200,6 +204,14 @@ public class TransactionCommand extends Command{
 		}
 		
 		return request(url, HttpMethod.POST, params, TransactionAnswer.class);
+	}
+	
+	public TransactionAnswer testBoletoPay(String transactionAPIId) throws PagarmeAPIException{
+		String url = ENDPOINT + TRANSACTION_PATH + "/" + transactionAPIId;
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("api_key", APIKEY);
+		params.add("status", "paid");
+		return request(url, HttpMethod.PUT, params, TransactionAnswer.class);
 	}
 	
 	public Payable[] retrievePayablesByTransaction(String transactionAPIId) throws PagarmeAPIException{
